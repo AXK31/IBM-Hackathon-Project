@@ -3,26 +3,23 @@
 
 {% block content %}
 
- <!-- Navigation Bar -->
- <nav class="navbar fixed-top bg-body-tertiary">
+<!-- Navigation Bar -->
+<nav class="navbar fixed-top bg-body-tertiary">
     <div class="container-fluid">
-      
-    
-    <h1 class="navbar-brand">MediCare App</h1>
-    <ul class="navbar-links">
-        <li><a href="{{ url_for('main') }}">Home</a></li>
-        <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-        <li class="dropdown">
-            <a class="dropdown-btn">Services</a>
-            <ul class="dropdown-menu">
-                <li><a href="{{url_for('chat')}}">Chat with Medicare</a></li>
-                <li><a href="{{url_for('report')}}">Report Analysis</a></li>
-                
-            </ul>
-        </li>
-        <li><a href="{{ url_for('login') }}">Logout</a></li>
-    </ul>
-</div>
+        <h1 class="navbar-brand">MediCare App</h1>
+        <ul class="navbar-links">
+            <li><a href="{{ url_for('main') }}">Home</a></li>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li class="dropdown">
+                <a class="dropdown-btn">Services</a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{url_for('chat')}}">Chat with MediCare</a></li>
+                    <li><a href="{{url_for('report')}}">Report Analysis</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('login') }}">Logout</a></li>
+        </ul>
+    </div>
 </nav>
 
 <div class="main-container">
@@ -31,7 +28,12 @@
     <p>
         This is your central hub for managing your activities and exploring the services we offer. 
         Navigate using the menu above to explore the dashboard, services, or log Lorem ipsum dolor sit amet consectetur adipisicing elit. Error aspernatur officiis quod deleniti debitis quis, vel doloremque similique, consectetur impedit necessitatibus? Odit ipsum consequatur ea dolore necessitatibus nostrum nulla non!
-    </p></div>
+    </p>
+
+    <!-- Main Image Section -->
+    <div class="main-image">
+        <img src="{{ url_for('static', filename='images/medic.svg') }}" alt="AI" />
+    </div>
 
     <!-- About Section -->
     <div class="about-section">
@@ -44,7 +46,6 @@
             Use the <strong>Services</strong> dropdown to explore what we offer, or visit your <strong>Dashboard</strong> to check your updates.
         </p>
     </div>
-
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -91,36 +92,14 @@
             </div>
         </div>
     </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials-section">
-        <h2>What Our Users Say</h2>
-        <div class="testimonials-grid">
-            <div class="testimonial-card">
-                <p>"MediCare has revolutionized the way I manage my health. Highly recommended!"</p>
-                <span>- Sarah J.</span>
-            </div>
-            <div class="testimonial-card">
-                <p>"I love the Symptom Checker. It's quick, accurate, and so easy to use."</p>
-                <span>- David K.</span>
-            </div>
-            <div class="testimonial-card">
-                <p>"The virtual assistant helped me connect with a specialist in no time. Amazing!"</p>
-                <span>- Emily W.</span>
-            </div>
-        </div>
-    </section>
-
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest"></script>
-
 
 <footer>
     <p>&copy; 2025 MediCare App. All rights reserved.</p>
 </footer>
+
 {% endblock %}
 
-
+{% block scripts %}
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest"></script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session 
 import ibm_db
 import hashlib
 import secrets
@@ -16,6 +16,8 @@ from ibm_watsonx_ai.foundation_models.utils.enums import DecodingMethods
 from langchain_ibm import WatsonxLLM
 import jsonify
 
+
+
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
 
@@ -25,9 +27,9 @@ db2_connection_string = "DATABASE=bludb;HOSTNAME=0c77d6f2-5da9-48a9-81f8-86b520b
 # WatsonX credentials
 credentials = Credentials(
     url="https://us-south.ml.cloud.ibm.com",
-    api_key="REOuCDyvK-F77HZW6CtChMWDAhSBxqKDTcfvzSmmJkfI",
+    api_key="wUumZ-raqvUZ-a5J2rOBTlkWFv7YNpnNFJyanU55e0GB",
 )
-project_id = os.getenv("97ea408b-8fee-4927-86e3-13fdc670ee98","a8f0c192-1329-403b-85cf-7d6f8e8c43ed")
+project_id = os.getenv("97ea408b-8fee-4927-86e3-13fdc670ee98","f18352f9-2746-4cc6-b3c8-8025ac2377bb")
 api_client = APIClient(credentials=credentials, project_id=project_id)
 
 # Initialize Watsonx embeddings
@@ -130,7 +132,6 @@ def login():
 # Route for the dashboard or home page after login
 @app.route('/')
 def initial():
-    
     return render_template('welcome.html')
 
 @app.route('/main')
@@ -144,9 +145,7 @@ def main():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/chat')
-def chat():
-    return render_template('chat.html')
+
 
 @app.route('/report')
 def report():
@@ -197,6 +196,40 @@ def process_file():
     # Return the response as plain text
     return render_template('result.html', response=response)
 
+
+
+
+
+@app.route('/chat', methods=['GET', 'POST'])
+def chat():
+    """Chat endpoint to render the chat page."""
+    if 'chat_history' not in session:
+        session['chat_history'] = []  # Initialize chat history
+
+    if request.method == 'POST':
+        user_message = request.json.get('message', '').strip()
+        if not user_message:
+            return jsonify({"error": "Message cannot be empty."}), 400
+
+        try:
+            # Process the user's message
+            assistant_response = watsonx_granite(user_message)
+
+            # Update session chat history
+            session['chat_history'].append({"user": user_message, "assistant": assistant_response})
+            session.modified = True
+
+            return jsonify({"user": user_message, "assistant": assistant_response})
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+    return render_template('chat.html', chat_history=session['chat_history'])
+
+@app.route('/clear_chat', methods=['POST'])
+def clear_chat():
+    """Clear the chat history."""
+    session.pop('chat_history', None)
+    return jsonify({"message": "Chat history cleared."})
 
 
 if __name__ == '__main__':

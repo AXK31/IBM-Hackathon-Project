@@ -2,21 +2,77 @@
 {% block title %}Chat with MediCare{% endblock %}
 {% block content %}
 <div class="chat-container">
-    <div class="chat-header">
-        <h2>Chat</h2>
-    </div>
-    <div class="chat-messages">
-        <div class="message bot">
-            <span class="text">Hi! How can I help you today?</span>
+    <h1>Chat with MediCare</h1>
+    
+    <div id="chat-box" style="border: 1px solid #ddd; padding: 10px; max-height: 400px; overflow-y: auto; background-color: #f9f9f9;">
+        {% for message in chat_history %}
+        <div class="chat-message user">
+            <strong>You:</strong> {{ message.user }}
         </div>
-        <div class="message user">
-            
+        <div class="chat-message assistant">
+            <strong>Assistant:</strong> {{ message.assistant }}
         </div>
+        {% endfor %}
     </div>
-    <div class="chat-input">
-        <input type="text" placeholder="Type your message..." id="chatInput" />
-        <button id="sendButton">Send</button>
+    <div class="chat-input-section" style="display: flex; gap: 10px; margin-top: 20px;">
+        <input type="text" id="user-input" placeholder="Type your message here..." style="flex-grow: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+        <button id="send-btn" style="padding: 10px 20px; background-color: #007bff; border: none; color: white; border-radius: 5px; cursor: pointer;">Send</button>
+        <button id="clear-btn" style="padding: 10px 20px; background-color: #f44336; border: none; color: white; border-radius: 5px; cursor: pointer;">Clear</button>
     </div>
 </div>
 
+<script>
+    const sendButton = document.getElementById('send-btn');
+    const clearButton = document.getElementById('clear-btn');
+    const inputField = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
+
+    sendButton.addEventListener('click', async () => {
+        const message = inputField.value.trim();
+
+        if (!message) {
+            alert('Please type a message');
+            return; // Prevent sending an empty message
+        }
+
+        // Send the message to the Flask backend
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Append user message
+            chatBox.innerHTML += `
+                <div class="chat-message user"><strong>You:</strong> ${data.user}</div>
+                <div class="chat-message assistant"><strong>Assistant:</strong> ${data.assistant}</div>
+            `;
+            inputField.value = ''; // Clear input field
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom of chat box
+        } else {
+            alert(data.error || "An error occurred.");
+        }
+    });
+
+    clearButton.addEventListener('click', async () => {
+        // Clear chat history on backend
+        await fetch('/clear_chat', { method: 'POST' });
+        chatBox.innerHTML = ''; // Clear chatbox in the frontend
+    });
+
+    inputField.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendButton.click(); // Trigger send when pressing Enter
+        }
+    });
+</script>
+
 {% endblock %}
+
+
+
+
+
