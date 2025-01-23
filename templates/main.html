@@ -24,7 +24,7 @@
 
 <div class="main-container">
     <!-- Greeting Section -->
-    <h1>Welcome, {{ user.username }}!</h1>
+    <h1>Welcome, {{ user}}!</h1>
     <p>
         This is your central hub for managing your activities and exploring the services we offer. 
         Navigate using the menu above to explore the dashboard, services, or log Lorem ipsum dolor sit amet consectetur adipisicing elit. Error aspernatur officiis quod deleniti debitis quis, vel doloremque similique, consectetur impedit necessitatibus? Odit ipsum consequatur ea dolore necessitatibus nostrum nulla non!
@@ -50,7 +50,7 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1>Welcome to <span class="brand-name">MediCare</span></h1>
+            <h1>Welcome {{user.username}} to <span class="brand-name">MediCare</span></h1>
             <p>Your companion for personalized healthcare solutions. Explore tools, consult experts, and stay healthy!</p>
             <a href="{{ url_for('chat') }}" class="btn btn-primary">Explore Services</a>
         </div>
@@ -103,3 +103,4 @@
 {% block scripts %}
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest"></script>
 {% endblock %}
+

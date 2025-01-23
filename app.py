@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session 
+from flask import Flask, render_template, request, redirect, url_for, flash
+import os
 import ibm_db
 import hashlib
 import secrets
-import os
 from ibm_watsonx_ai import Credentials, APIClient
 import PyPDF2
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -15,8 +15,6 @@ from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 from ibm_watsonx_ai.foundation_models.utils.enums import DecodingMethods
 from langchain_ibm import WatsonxLLM
 import jsonify
-
-
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
@@ -55,7 +53,7 @@ watsonx_granite = WatsonxLLM(
     project_id=project_id,
     params=parameters
 )
-
+chat_history = []
 qa = None
 # Route for displaying the signup page
 @app.route('/signup', methods=['GET', 'POST'])
@@ -95,12 +93,14 @@ def signup():
 
     return render_template('signup.html')
 
-
+usname = " "
 # Route for displaying the login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         # Get the user inputs from the login form
+        global usname 
+        usname = request.form['username']
         username = request.form['username']
         password = request.form['password']
         hashed_password = hashlib.sha256(password.encode()).hexdigest()  # Hash the password
@@ -132,24 +132,31 @@ def login():
 # Route for the dashboard or home page after login
 @app.route('/')
 def initial():
+    
     return render_template('welcome.html')
 
 @app.route('/main')
 def main():
     user_details = {
-        "username": "JohnDoe"  # Replace with actual session data
+        "username": usname  # Replace with actual session data
     }
     return render_template('main.html', user=user_details)
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
-
+    user_details = {
+        "username": usname  # Replace with actual session data
+    }
+    return render_template('dashboard.html',user=user_details)
 
 
 @app.route('/report')
 def report():
     return render_template('report.html')
+
+@app.route("/chat")
+def chat():
+    return render_template('chat.html')
 
 @app.route('/process', methods=['POST'])
 def process_file():
@@ -193,44 +200,16 @@ def process_file():
     query = request.form.get('query', "Default query?")
     response = qa.invoke(query)
 
-    # Return the response as plain text
-    return render_template('result.html', response=response)
+    # Extract the results field from the response
+    if isinstance(response, dict) and 'result' in response:
+        answer_text = response['result']
+    else:
+        answer_text = "No results found or invalid response format."
 
-
-
-
-
-@app.route('/chat', methods=['GET', 'POST'])
-def chat():
-    """Chat endpoint to render the chat page."""
-    if 'chat_history' not in session:
-        session['chat_history'] = []  # Initialize chat history
-
-    if request.method == 'POST':
-        user_message = request.json.get('message', '').strip()
-        if not user_message:
-            return jsonify({"error": "Message cannot be empty."}), 400
-
-        try:
-            # Process the user's message
-            assistant_response = watsonx_granite(user_message)
-
-            # Update session chat history
-            session['chat_history'].append({"user": user_message, "assistant": assistant_response})
-            session.modified = True
-
-            return jsonify({"user": user_message, "assistant": assistant_response})
-        except Exception as e:
-            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-
-    return render_template('chat.html', chat_history=session['chat_history'])
-
-@app.route('/clear_chat', methods=['POST'])
-def clear_chat():
-    """Clear the chat history."""
-    session.pop('chat_history', None)
-    return jsonify({"message": "Chat history cleared."})
+    # Return the answer text as plain text
+    return render_template('result.html', response=answer_text)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+

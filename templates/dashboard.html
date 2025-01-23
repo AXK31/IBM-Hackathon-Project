@@ -4,7 +4,7 @@
 <div class="dashboard-container">
     <!-- Header Section -->
     <section class="header-section">
-        <h1>Welcome, [User's Name]!</h1>
+        <h1 style="color: black;">Welcome, {{user.username}}</h1>
         <p>Your personalized healthcare dashboard provides an overview of your profile and analytics.</p>
     </section>
 
@@ -12,11 +12,9 @@
     <section class="profile-section">
         <h2>Your Profile</h2>
         <div class="profile-card">
-            <img src="{{ url_for('static', filename='images/Medic.svg') }}" alt="" class="profile-avatar">
+            <img src="{{ url_for('static' , filename='images/Medic.svg') }}" alt="" class="profile-avatar">
             <div class="profile-details">
-                <h3>John Doe</h3>
-                <p>Email: johndoe@example.com</p>
-                <p>Role: Healthcare Specialist</p>
+                <h3>{{user.username}}</h3>
                 <p>Member Since: January 2023</p>
             </div>
         </div>
@@ -26,15 +24,15 @@
     <section class="stats-cards">
         <div class="card">
             <h2>Important chat</h2>
-            <p>45</p>
+            <p>0</p>
         </div>
         <div class="card">
             <h2>Reports</h2>
-            <p>15 </p>
+            <p>0 </p>
         </div>
         <div class="card">
             <h2>Messages</h2>
-            <p>8 Unread</p>
+            <p>0 Unread</p>
         </div>
     </section>
 
@@ -57,8 +55,8 @@
             labels: ["January", "February", "March", "April", "May"],
             datasets: [
                 {
-                    label: "Patients Seen",
-                    data: [50, 75, 60, 90, 100],
+                    label: "Reports Generated",
+                    data: [0,0,0,0,0],
                     borderColor: "#7091E6",
                     backgroundColor: "rgba(112, 145, 230, 0.3)",
                     fill: true,
