@@ -395,14 +395,11 @@ body, html {
 
 /* Main Page Styles */
 .main-container {
-    padding: 20px;
+    padding-top: calc(70px + 20px);
     background-color: #f8f9fa;
     color: #333;
 }
 
-.main-image {
-
-}
 
 /* Hero Section */
 .hero-section {
@@ -411,7 +408,8 @@ body, html {
     align-items: center;
     justify-content: space-between;
     padding: 50px;
-    background: linear-gradient(to bottom right, #7091E6, #EDE8F5);
+    background-image: linear-gradient(to top, #dbdcd7 0%, #dddcd7 24%, #e2c9cc 30%, #e7627d 46%, #b8235a 59%, #801357 71%, #3d1635 84%, #1c1a27 100%);
+
     font-family: Arial, sans-serif;
     color: white;
     height: 100vh;

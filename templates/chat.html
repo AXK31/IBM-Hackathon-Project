@@ -126,38 +126,60 @@
     </div>
 
     <script>
-       
+async function addPrompt() {
+    const userPrompt = document.getElementById('userPrompt');
+    const messages = document.getElementById('messages');
 
-        async function addPrompt() {
-            const userPrompt = document.getElementById('userPrompt');
-            const messages = document.getElementById('messages');
+    if (userPrompt.value.trim() !== '') {
+        // Add user message to the chat
+        const userMessage = document.createElement('p');
+        userMessage.className = 'user-message';
+        userMessage.textContent = userPrompt.value;
+        messages.appendChild(userMessage);
 
-            if (userPrompt.value.trim() !== '') {
-                // Add user message
-                const userMessage = document.createElement('p');
-                userMessage.className = 'user-message';
-                userMessage.textContent = userPrompt.value;
-                messages.appendChild(userMessage);
+        // Scroll to the bottom of the messages area
+        messages.scrollTop = messages.scrollHeight;
 
-                // Scroll to the bottom of the messages area
-                messages.scrollTop = messages.scrollHeight;
+        try {
+            // Send prompt to Flask backend
+            const response = await fetch('/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: userPrompt.value })
+            });
 
-                // Send prompt to IBM Granite
-                const botResponse = "Hello Ok";
+            const data = await response.json();
 
-                // Add bot message
+            if (response.ok) {
+                // Add bot message to the chat
                 const botMessage = document.createElement('p');
                 botMessage.className = 'bot-message';
-                botMessage.textContent = botResponse;
+                botMessage.textContent = data.response || "No response from bot.";
                 messages.appendChild(botMessage);
-
-                // Scroll to the bottom of the messages area
-                messages.scrollTop = messages.scrollHeight;
-
-                // Clear the input field
-                userPrompt.value = '';
+            } else {
+                // Handle error from backend
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'bot-message';
+                errorMessage.textContent = `Error: ${data.error || "Something went wrong."}`;
+                messages.appendChild(errorMessage);
             }
+        } catch (error) {
+            console.error('Error:', error);
+            const errorMessage = document.createElement('p');
+            errorMessage.className = 'bot-message';
+            errorMessage.textContent = "Error connecting to the server.";
+            messages.appendChild(errorMessage);
         }
+
+        // Scroll to the bottom of the messages area
+        messages.scrollTop = messages.scrollHeight;
+
+        // Clear the input field
+        userPrompt.value = '';
+    }
+}
 
        
        

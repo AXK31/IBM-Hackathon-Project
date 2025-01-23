@@ -4,7 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Query Result</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f3f8fb, #e6f7ff);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px; /* Increased max-width for better responsiveness */
+            width: 90%;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #3D52A0;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: #c45555;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: center;
+            background: #ffe6e6;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        pre {
+            font-size: 1.1rem;
+            text-align: left;
+            background: #f7f9fc;
+            color: #444;
+            padding: 20px; /* More padding for better readability */
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            overflow-y: auto; /* Scroll vertically for long text */
+            max-height: 400px; /* Restrict height to ensure proper spacing */
+            white-space: pre-wrap; /* Ensures text wraps inside the box */
+            word-wrap: break-word; /* Prevents text from overflowing horizontally */
+            margin: 20px 0;
+        }
+
+        a {
+            display: inline-block;
+            background: linear-gradient(135deg, #3D52A0, #5A6FB8);
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            transition: background 0.3s, transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        a:hover {
+            background: linear-gradient(135deg, #2e417f, #495d9f);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            pre {
+                font-size: 1rem;
+                padding: 15px;
+                max-height: 300px; /* Adjust height for smaller screens */
+            }
+
+            a {
+                font-size: 1rem;
+                padding: 10px 25px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,9 +118,9 @@
         {% if error %}
             <p class="error">{{ error }}</p>
         {% else %}
-            <pre>{{ response }}</pre> <!-- Display the response as plain text -->
+            <pre>{{ response }}</pre> <!-- Display the response inside a large, styled box -->
         {% endif %}
-        <a href="{{url_for(report)}}">Go Back</a>
+        <a href="{{ url_for('report') }}">Go Back</a>
     </div>
 </body>
 </html>

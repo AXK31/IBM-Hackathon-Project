@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash,jsonify
 import os
 import ibm_db
 import hashlib
@@ -14,7 +14,6 @@ from ibm_watsonx_ai.foundation_models.utils.enums import ModelTypes
 from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 from ibm_watsonx_ai.foundation_models.utils.enums import DecodingMethods
 from langchain_ibm import WatsonxLLM
-import jsonify
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
@@ -38,6 +37,17 @@ embeddings = WatsonxEmbeddings(
     project_id=project_id,
 )
 
+params2 ={
+    
+    GenParams.DECODING_METHOD: DecodingMethods.SAMPLE,  # More refined responses
+    GenParams.MIN_NEW_TOKENS: 5,
+    GenParams.MAX_NEW_TOKENS: 100,
+    GenParams.TEMPERATURE: 0.7,  # Adjust for creativity
+    GenParams.STOP_SEQUENCES: ["<|endoftext|>"],
+}
+
+
+
 # Initialize Granite model
 parameters = {
     GenParams.DECODING_METHOD: DecodingMethods.GREEDY,
@@ -45,7 +55,7 @@ parameters = {
     GenParams.MAX_NEW_TOKENS: 100,
     GenParams.STOP_SEQUENCES: ["<|endoftext|>"]
 }
-model_id = "ibm/granite-3-8b-instruct"
+model_id = "ibm/granite-13b-chat-v2"
 watsonx_granite = WatsonxLLM(
     model_id=model_id,
     url=credentials.url,
@@ -53,6 +63,9 @@ watsonx_granite = WatsonxLLM(
     project_id=project_id,
     params=parameters
 )
+
+
+
 chat_history = []
 qa = None
 # Route for displaying the signup page
@@ -158,6 +171,21 @@ def report():
 def chat():
     return render_template('chat.html')
 
+
+@app.route('/chatbot', methods=['POST'])
+def chatbot():
+    try:
+        user_prompt = request.json.get('prompt', '')
+        if not user_prompt:
+            return jsonify({"error": "Empty prompt!"}), 400
+
+        # Use IBM Granite to generate a response
+        response = watsonx_granite.invoke(user_prompt)
+        return jsonify({"response": response})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/process', methods=['POST'])
 def process_file():
     """Handle file upload and query."""
@@ -210,6 +238,6 @@ def process_file():
     return render_template('result.html', response=answer_text)
 
 
+
 if __name__ == '__main__':
     app.run(debug=True)
-
